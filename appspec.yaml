@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: !ImportValue MyECSTaskDefinitionArn
+        LoadBalancerInfo:
+          ContainerName: !ImportValue MyContainerName
+          ContainerPort: 3000
