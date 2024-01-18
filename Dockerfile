@@ -1,4 +1,6 @@
-FROM node:18-alpine AS base
+# CUSTOM_NODE_IMAGE is replaced in AWS CodeBuild
+ARG CUSTOM_NODE_IMAGE=node:18-alpine
+FROM ${CUSTOM_NODE_IMAGE} AS base
 
 # Install dependencies only when needed
 FROM base AS deps
