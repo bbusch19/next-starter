@@ -258,10 +258,10 @@ Resources:
               OutputArtifacts:
                 - Name: SourceOutput
               Configuration:
-                Owner: turnercode
+                Owner: !Ref GitHubRepoOwner
                 Repo: !Ref GitHubRepoName
                 Branch: !Ref GitHubBranch
-                OAuthToken: '{{resolve:secretsmanager:stage/cnn-hydra/stack:SecretString:GitHubToken}}'
+                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GithubToken}}'
 
         - Name: Build
           Actions:
