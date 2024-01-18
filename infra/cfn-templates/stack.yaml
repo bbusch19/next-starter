@@ -333,6 +333,15 @@ Resources:
                   - codebuild:BatchGetBuildBatches
                   - codebuild:StartBuildBatch
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - codedeploy:CreateDeployment
+                  - codedeploy:GetApplication
+                  - codedeploy:GetApplicationRevision
+                  - codedeploy:GetDeployment
+                  - codedeploy:GetDeploymentConfig
+                  - odedeploy:RegisterApplicationRevision
+                Resource: '*'
 
   MyCodeDeployApplication:
     Type: 'AWS::CodeDeploy::Application'
