@@ -316,10 +316,10 @@ Resources:
                   - s3:GetBucketAcl
                   - codebuild:StartBuild
                 Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
-                - Effect: Allow
-                  Action:
-                    - codebuild:StartBuild
-                  Resource: !Sub 'arn:aws:codebuild:::${MyCodeBuildProject}/*'
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource: !Sub 'arn:aws:codebuild:::${MyCodeBuildProject}/*'
 
   MyCodeDeployApplication:
     Type: 'AWS::CodeDeploy::Application'
