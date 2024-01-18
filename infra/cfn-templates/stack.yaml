@@ -315,6 +315,7 @@ Resources:
                   - s3:GetBucketVersioning
                   - s3:GetBucketAcl
                   - secretsmanager:GetSecretValue
+                  - codebuild:StartBuild
                 Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
 
   MyCodeDeployApplication:
