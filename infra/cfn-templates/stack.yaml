@@ -340,7 +340,7 @@ Resources:
                   - codedeploy:GetApplicationRevision
                   - codedeploy:GetDeployment
                   - codedeploy:GetDeploymentConfig
-                  - odedeploy:RegisterApplicationRevision
+                  - codedeploy:RegisterApplicationRevision
                 Resource: '*'
 
   MyCodeDeployApplication:
