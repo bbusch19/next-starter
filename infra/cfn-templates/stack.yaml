@@ -354,6 +354,13 @@ Resources:
       ApplicationName: !Ref MyCodeDeployApplication
       DeploymentGroupName: MyCodeDeployDeploymentGroup
       ServiceRoleArn: !GetAtt MyCodeDeployRole.Arn
+      DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
+      ECSServices:
+        - ClusterName: !Ref MyECSCluster
+          ServiceName: !Ref MyECSService
+      LoadBalancerInfo:
+        TargetGroupInfoList:
+          - Name: !GetAtt MyTargetGroup.TargetGroupName
       AutoScalingGroups: [] # Add your Auto Scaling Group ARNs here if using Auto Scaling
 
   MyCodeDeployRole:
