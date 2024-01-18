@@ -261,7 +261,7 @@ Resources:
                 Owner: !Ref GitHubRepoOwner
                 Repo: !Ref GitHubRepoName
                 Branch: !Ref GitHubBranch
-                OAuthToken: 'foo'
+                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GithubToken}}'
 
         - Name: Build
           Actions:
