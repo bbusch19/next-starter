@@ -172,7 +172,8 @@ Resources:
     Properties:
       Cluster: !Ref MyECSCluster
       DesiredCount: 2 # Adjust as needed
-      TaskDefinition: !Ref MyECSTaskDefinition
+      TaskDefinition: !Sub '${MyECSTaskDefinition}:1'
+      DependsOn: MyECSTaskDefinition
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
