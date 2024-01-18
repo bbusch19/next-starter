@@ -314,9 +314,12 @@ Resources:
                   - s3:PutObject
                   - s3:GetBucketVersioning
                   - s3:GetBucketAcl
-                  - secretsmanager:GetSecretValue
                   - codebuild:StartBuild
                 Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
+                - Effect: Allow
+                  Action:
+                    - codebuild:StartBuild
+                  Resource: !Sub 'arn:aws:codebuild:::${MyCodeBuildProject}/*'
 
   MyCodeDeployApplication:
     Type: 'AWS::CodeDeploy::Application'
