@@ -237,6 +237,17 @@ Resources:
                   - s3:PutObject
                   - s3:GetBucketAcl
                 Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetAuthorizationToken
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                Resource: '*'
 
   MyCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
@@ -318,6 +329,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - codebuild:BatchGetBuildBatches
+                  - codebuild:StartBuildBatch
                 Resource: '*'
 
   MyCodeDeployApplication:
