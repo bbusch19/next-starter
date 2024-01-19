@@ -29,10 +29,10 @@ Resources:
     Properties:
       BucketName: !Ref S3BucketName
 
-  MyECRRepository:
-    Type: 'AWS::ECR::Repository'
-    Properties:
-      RepositoryName: !Ref ImageRepositoryName
+  # MyECRRepository:
+  #   Type: 'AWS::ECR::Repository'
+  #   Properties:
+  #     RepositoryName: !Ref ImageRepositoryName
 
   MyVPC:
     Type: 'AWS::EC2::VPC'
