@@ -22,9 +22,6 @@ Parameters:
     Type: String
     Default: my-container
 
-Conditions:
-  IsCodePipelineCompleted: !Equals [!GetAtt MyCodePipeline.Stages[1].LatestExecution.Status, SUCCEEDED]
-
 Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
@@ -206,7 +203,6 @@ Resources:
   MyECSService:
     Type: 'AWS::ECS::Service'
     DependsOn: MyALBListener
-    Condition: IsCodePipelineCompleted
     Properties:
       Cluster: !Ref MyECSCluster
       DesiredCount: 1 # Adjust as needed
