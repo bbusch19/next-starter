@@ -202,7 +202,9 @@ Resources:
 
   MyECSService:
     Type: 'AWS::ECS::Service'
-    DependsOn: MyALBListener
+    DependsOn:
+      - MyALBListener
+      - MyCodePipeline
     Properties:
       Cluster: !Ref MyECSCluster
       DesiredCount: 1 # Adjust as needed
