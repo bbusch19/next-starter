@@ -22,6 +22,9 @@ Parameters:
     Type: String
     Default: my-container
 
+Conditions:
+  IsCodePipelineCompleted: !Equals [!GetAtt MyCodePipeline.Stages[1].LatestExecution.Status, SUCCEEDED]
+
 Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
@@ -202,9 +205,8 @@ Resources:
 
   MyECSService:
     Type: 'AWS::ECS::Service'
-    DependsOn:
-      - MyALBListener
-      - MyCodePipeline
+    DependsOn: MyALBListener
+    Condition: IsCodePipelineCompleted
     Properties:
       Cluster: !Ref MyECSCluster
       DesiredCount: 1 # Adjust as needed
@@ -424,7 +426,7 @@ Resources:
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       ECSServices:
         - ClusterName: !Ref MyECSCluster
-          ServiceName: !Ref MyECSService
+          ServiceName: !GetAtt MyECSService.Outputs.MyECSServiceName
       LoadBalancerInfo:
         TargetGroupInfoList:
           - Name: !GetAtt MyTargetGroup.TargetGroupName
@@ -460,3 +462,7 @@ Outputs:
     Value: ContainerName
     Export:
       Name: MyContainerName
+  MyECSServiceName:
+    Value: !GetAtt MyECSService.Name
+    Export:
+      Name: MyECSServiceName
