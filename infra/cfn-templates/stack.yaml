@@ -95,7 +95,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnetB
 
-  PublicRouteTable:
+PublicRouteTable:
   Type: AWS::EC2::RouteTable
   Properties:
     VpcId: !Ref MyVPC
