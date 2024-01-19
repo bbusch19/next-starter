@@ -279,7 +279,10 @@ Resources:
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: -1
-          SourceSecurityGroupId: !GetAtt MyALBSecurityGroup.GroupId
+          SourceSecurityGroupId: !GetAtt MyALBSecurityGroup.GroupI
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: '0.0.0.0/0' # Allow outbound traffic to the internet
 
   MyCodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
