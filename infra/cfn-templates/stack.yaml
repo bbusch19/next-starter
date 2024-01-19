@@ -111,6 +111,7 @@ Resources:
 
   MyALBListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    DependsOn: MyECSServiceRole
     Properties:
       DefaultActions:
         - Type: forward
@@ -169,18 +170,51 @@ Resources:
 
   MyECSService:
     Type: 'AWS::ECS::Service'
+    DependsOn: MyALBListener
     Properties:
       Cluster: !Ref MyECSCluster
-      DesiredCount: 2 # Adjust as needed
+      DesiredCount: 1 # Adjust as needed
       TaskDefinition: !Ref MyECSTaskDefinition
-      LaunchType: EC2
+      LaunchType: FARGATE
+      Role: !Ref MyECSServiceRole
+      LoadBalancers:
+        - ContainerName: ContainerName
+          ContainerPort: 3000
+          TargetGroupArn: !Ref MyTargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
-            - !Ref PrivateSubnetA
-            - !Ref PrivateSubnetB
+            - !Ref PublicSubnetA
+            - !Ref PublicSubnetB
           SecurityGroups:
             - !GetAtt MyECSSecurityGroup.GroupId
+
+  MyECSServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: ecs-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+                  - 'elasticloadbalancing:DeregisterTargets'
+                  - 'elasticloadbalancing:Describe*'
+                  - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+                  - 'elasticloadbalancing:RegisterTargets'
+                  - 'ec2:Describe*'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                Resource: '*'
 
   MyECSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
