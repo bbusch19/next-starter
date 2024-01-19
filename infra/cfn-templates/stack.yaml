@@ -176,7 +176,6 @@ Resources:
       DesiredCount: 1 # Adjust as needed
       TaskDefinition: !Ref MyECSTaskDefinition
       LaunchType: FARGATE
-      Role: !Ref MyECSServiceRole
       LoadBalancers:
         - ContainerName: ContainerName
           ContainerPort: 3000
