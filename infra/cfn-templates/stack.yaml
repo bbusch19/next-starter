@@ -97,6 +97,7 @@ Resources:
 
   MyALB:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    DependsOn: MyInternetGateway
     Properties:
       Name: MyALB
       Subnets:
