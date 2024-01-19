@@ -159,6 +159,7 @@ Resources:
       NetworkMode: awsvpc
       Memory: 512 # Specify the amount of memory in MiB
       Cpu: 256
+      ExecutionRoleArn: !GetAtt MyECSTaskExecutionRole.Arn
       RequiresCompatibilities:
         - FARGATE
       ContainerDefinitions:
@@ -169,6 +170,31 @@ Resources:
           PortMappings:
             - ContainerPort: 3000
               HostPort: 3000
+
+  MyECSTaskExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSExecutionRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
 
   MyECSService:
     Type: 'AWS::ECS::Service'
