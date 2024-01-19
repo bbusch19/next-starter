@@ -159,7 +159,8 @@ Resources:
       NetworkMode: awsvpc
       Memory: 512 # Specify the amount of memory in MiB
       Cpu: 256
-      RequiresCompatibilities: FARGATE
+      RequiresCompatibilities:
+        - FARGATE
       ContainerDefinitions:
         - Name: ContainerName
           Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageRepositoryName}:latest'
