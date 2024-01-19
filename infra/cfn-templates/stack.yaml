@@ -130,6 +130,7 @@ Resources:
       Port: 80
       Protocol: HTTP
       VpcId: !Ref MyVPC
+      TargetType: ip # Set the target type to ip
       HealthCheckIntervalSeconds: 30
       HealthCheckProtocol: HTTP
       HealthCheckPath: '/'
