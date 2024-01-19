@@ -95,6 +95,31 @@ Resources:
         - Key: Name
           Value: PrivateSubnetB
 
+  PublicRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+    VpcId: !Ref MyVPC
+
+PublicRouteTableAssociationA:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId: !Ref PublicSubnetA
+    RouteTableId: !Ref PublicRouteTable
+
+PublicRouteTableAssociationB:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId: !Ref PublicSubnetB
+    RouteTableId: !Ref PublicRouteTable
+
+PublicRoute:
+  Type: AWS::EC2::Route
+  DependsOn: MyInternetGatewayAttachment
+  Properties:
+    RouteTableId: !Ref PublicRouteTable
+    DestinationCidrBlock: 0.0.0.0/0
+    GatewayId: !Ref MyInternetGateway
+
   MyALB:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     DependsOn:
@@ -412,6 +437,7 @@ Resources:
     Type: 'AWS::CodeDeploy::Application'
     Properties:
       ApplicationName: MyCodeDeployApplication
+      ComputePlatform: ECS
 
   MyCodeDeployDeploymentGroup:
     Type: 'AWS::CodeDeploy::DeploymentGroup'
