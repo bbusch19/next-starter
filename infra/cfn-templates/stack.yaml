@@ -186,8 +186,8 @@ Resources:
     Properties:
       Family: MyECSTask
       NetworkMode: awsvpc
-      Memory: 512 # Specify the amount of memory in MiB
-      Cpu: 256
+      Memory: 32768 # Specify the amount of memory in MiB
+      Cpu: 16384
       ExecutionRoleArn: !GetAtt MyECSTaskExecutionRole.Arn
       RequiresCompatibilities:
         - FARGATE
