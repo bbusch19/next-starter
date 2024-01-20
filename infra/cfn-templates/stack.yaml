@@ -194,11 +194,13 @@ Resources:
       ContainerDefinitions:
         - Name: ContainerName
           Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageRepositoryName}:latest'
-          Memory: 512 # Specify the amount of memory in MiB
-          Cpu: 256
+          Memory: 32768 # Specify the amount of memory in MiB
+          Cpu: 16384
           PortMappings:
             - ContainerPort: 3000
               HostPort: 3000
+              Protocol": tcp
+              AppProtocol": http
 
   MyECSTaskExecutionRole:
     Type: 'AWS::IAM::Role'
