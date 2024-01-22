@@ -545,6 +545,6 @@ Outputs:
     Export:
       Name: MyECSTaskDefinitionArn
   MyContainerName:
-    Value: !Ref ContainerName
+    Value: ContainerName
     Export:
       Name: MyContainerName
