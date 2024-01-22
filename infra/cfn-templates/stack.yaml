@@ -171,7 +171,7 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
-  
+
   MySecondTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
@@ -493,7 +493,7 @@ Resources:
         TargetGroupPairInfoList:
           - TargetGroups:
               - Name: MyTargetGroup1
-                Name: MyTargetGroup2
+              - Name: MyTargetGroup2
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref MyALBListener
