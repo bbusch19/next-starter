@@ -529,7 +529,7 @@ Resources:
 
 Outputs:
   MyECSTaskDefinitionArn:
-    Value: !GetAtt MyECSTaskDefinition.Arn
+    Value: !Ref MyECSTaskDefinition
     Export:
       Name: MyECSTaskDefinitionArn
   MyContainerName:
