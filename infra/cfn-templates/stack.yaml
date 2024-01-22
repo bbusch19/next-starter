@@ -200,7 +200,7 @@ Resources:
         CpuArchitecture: ARM64
         OperatingSystemFamily: LINUX
       ContainerDefinitions:
-        - Name: ContainerName
+        - Name: !Ref ContainerName
           Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageRepositoryName}:latest'
           Memory: 512 # Specify the amount of memory in MiB
           Cpu: 256
@@ -212,7 +212,7 @@ Resources:
             Options:
               awslogs-group: /ecs/MyLogGroup
               awslogs-region: us-east-1
-              awslogs-stream-prefix: ContainerName
+              awslogs-stream-prefix: !Ref ContainerName
 
   MyECSTaskExecutionRole:
     Type: 'AWS::IAM::Role'
@@ -248,7 +248,7 @@ Resources:
       TaskDefinition: !Ref MyECSTaskDefinition
       LaunchType: FARGATE
       LoadBalancers:
-        - ContainerName: ContainerName
+        - ContainerName: !Ref ContainerName
           ContainerPort: 3000
           TargetGroupArn: !Ref MyTargetGroup
       NetworkConfiguration:
@@ -499,7 +499,7 @@ Outputs:
     Export:
       Name: MyECSTaskDefinitionArn
   MyContainerName:
-    Value: ContainerName
+    Value: !Ref ContainerName
     Export:
       Name: MyContainerName
   MyECSServiceName:
