@@ -494,9 +494,9 @@ Resources:
           - TargetGroups:
               - Name: MyTargetGroup1
                 Name: MyTargetGroup2
-          ProdTrafficRoute:
-            ListenerArns:
-              - !Ref MyALBListener
+            ProdTrafficRoute:
+              ListenerArns:
+                - !Ref MyALBListener
 
       BlueGreenDeploymentConfiguration:
         DeploymentReadyOption:
