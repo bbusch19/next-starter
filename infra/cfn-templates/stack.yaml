@@ -525,6 +525,10 @@ Resources:
                 Action:
                   - ecs:UpdateService
                   - ecs:DescribeServices
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetBucketVersioning
+                  - s3:GetBucketAcl
                 Resource: '*'
 
 Outputs:
