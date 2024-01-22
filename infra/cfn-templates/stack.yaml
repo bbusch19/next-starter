@@ -471,6 +471,10 @@ Resources:
         TargetGroupInfoList:
           - Name: !GetAtt MyTargetGroup.TargetGroupName
       AutoScalingGroups: [] # Add your Auto Scaling Group ARNs here if using Auto Scaling
+      BlueGreenDeploymentConfiguration:
+        TerminateBlueInstancesOnDeploymentSuccess:
+          Action: TERMINATE
+          TerminationWaitTimeInMinutes: 5
 
   MyCodeDeployRole:
     Type: 'AWS::IAM::Role'
