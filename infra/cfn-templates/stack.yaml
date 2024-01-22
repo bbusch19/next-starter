@@ -191,8 +191,8 @@ Resources:
     Properties:
       Family: MyECSTask
       NetworkMode: awsvpc
-      Memory: 512 # Specify the amount of memory in MiB
-      Cpu: 256
+      Memory: 2048 # Specify the amount of memory in MiB
+      Cpu: 1024
       ExecutionRoleArn: !GetAtt MyECSTaskExecutionRole.Arn
       RequiresCompatibilities:
         - FARGATE
@@ -202,8 +202,8 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref ContainerName
           Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageRepositoryName}:latest'
-          Memory: 512 # Specify the amount of memory in MiB
-          Cpu: 256
+          Memory: 2048 # Specify the amount of memory in MiB
+          Cpu: 1024
           PortMappings:
             - ContainerPort: 3000
               HostPort: 3000
