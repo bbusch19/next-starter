@@ -159,7 +159,23 @@ Resources:
   MyTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: MyTargetGroup
+      Name: MyTargetGroup1
+      Port: 80
+      Protocol: HTTP
+      VpcId: !Ref MyVPC
+      TargetType: ip # Set the target type to ip
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: '/'
+      HealthCheckPort: traffic-port
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+  
+  MySecondTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: MyTargetGroup2
       Port: 80
       Protocol: HTTP
       VpcId: !Ref MyVPC
@@ -476,7 +492,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: !Ref: MyTargetGroup
+              - Name: MyTargetGroup1
+                Name: MyTargetGroup2
 
       BlueGreenDeploymentConfiguration:
         DeploymentReadyOption:
