@@ -473,6 +473,9 @@ Resources:
         - ClusterName: !Ref MyECSCluster
           ServiceName: !GetAtt MyECSService.Name
       AutoScalingGroups: [] # Add your Auto Scaling Group ARNs here if using Auto Scaling
+      LoadBalancerInfo:
+        ElbInfoList:
+          - Name: !Ref MyALB
       BlueGreenDeploymentConfiguration:
         DeploymentReadyOption:
           ActionOnTimeout: CONTINUE_DEPLOYMENT
