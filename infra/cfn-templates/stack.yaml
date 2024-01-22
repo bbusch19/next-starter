@@ -247,6 +247,8 @@ Resources:
       DesiredCount: 1 # Adjust as needed
       TaskDefinition: !Ref MyECSTaskDefinition
       LaunchType: FARGATE
+      DeploymentController:
+        Type: CODE_DEPLOY
       LoadBalancers:
         - ContainerName: !Ref ContainerName
           ContainerPort: 3000
@@ -464,6 +466,9 @@ Resources:
       DeploymentGroupName: MyCodeDeployDeploymentGroup
       ServiceRoleArn: !GetAtt MyCodeDeployRole.Arn
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
       ECSServices:
         - ClusterName: !Ref MyECSCluster
           ServiceName: !GetAtt MyECSService.Name
