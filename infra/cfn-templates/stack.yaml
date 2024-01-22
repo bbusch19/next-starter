@@ -466,7 +466,7 @@ Resources:
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       ECSServices:
         - ClusterName: !Ref MyECSCluster
-          ServiceName: !Ref MyECSService
+          ServiceName: !GetAtt MyECSService.Name
       LoadBalancerInfo:
         TargetGroupInfoList:
           - Name: !GetAtt MyTargetGroup.TargetGroupName
