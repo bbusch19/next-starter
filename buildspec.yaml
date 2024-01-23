@@ -29,9 +29,9 @@ phases:
       - echo '  - TargetService:' >> appspec.yaml
       - echo '      Type: AWS::ECS::Service' >> appspec.yaml
       - echo '      Properties:' >> appspec.yaml
-      - echo '        TaskDefinition: '"$TASK_ARN" >> appspec.yaml
+      - echo '        TaskDefinition: '$TASK_ARN >> appspec.yaml
       - echo '        LoadBalancerInfo:' >> appspec.yaml
-      - echo '          ContainerName: '"$CONTAINER_NAME" >> appspec.yaml
+      - echo '          ContainerName: '$CONTAINER_NAME >> appspec.yaml
       - echo '          ContainerPort: 3000' >> appspec.yaml
 artifacts:
   files:
