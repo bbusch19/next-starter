@@ -153,7 +153,6 @@ Resources:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     DependsOn:
       - MyECSServiceRole
-      - MySeedStack
     Properties:
       DefaultActions:
         - Type: forward
