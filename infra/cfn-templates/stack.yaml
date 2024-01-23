@@ -335,6 +335,15 @@ Resources:
       Cache:
         Type: S3
         Location: !Sub '${S3BucketName}/codebuild-cache'
+      EnvironmentVariables:
+        - Name: AWS_DEFAULT_REGION
+          Value: us-east-1
+        - Name: AWS_ACCOUNT_ID
+          Value: 292770788088
+        - Name: IMAGE_TAG
+          Value: latest
+        - Name: IMAGE_REPO_NAME
+          Value: ImageRepositoryName
 
   MyCodeBuildRole:
     Type: 'AWS::IAM::Role'
@@ -414,7 +423,6 @@ Resources:
                 - Name: BuildOutput
               Configuration:
                 ProjectName: !Ref MyCodeBuildProject
-                EnvironmentVariables: !Sub '[{"name":"AWS_DEFAULT_REGION","value":"us-east-1","type":"PLAINTEXT"},{"name":"AWS_ACCOUNT_ID","value":"292770788088","type":"PLAINTEXT"},{"name":"IMAGE_TAG","value":"latest","type":"PLAINTEXT"},{"name":"IMAGE_REPO_NAME","value":"${ImageRepositoryName}","type":"PLAINTEXT"}]'
 
         - Name: Deploy
           Actions:
