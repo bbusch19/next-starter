@@ -13,7 +13,7 @@ Resources:
   MyECRRepository:
     Type: 'AWS::ECR::Repository'
     Properties:
-    RepositoryName: !Ref ImageRepositoryName
+      RepositoryName: !Ref ImageRepositoryName
 
   MyCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
