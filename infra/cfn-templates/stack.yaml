@@ -29,10 +29,13 @@ Resources:
     Properties:
       BucketName: !Ref S3BucketName
 
-  # MyECRRepository:
-  #   Type: 'AWS::ECR::Repository'
-  #   Properties:
-  #     RepositoryName: !Ref ImageRepositoryName
+  MySeedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: seed-stack.yaml
+      Parameters:
+        ImageRepositoryName: !Ref ImageRepositoryName
+        S3BucketName: !Ref S3BucketName
 
   MyLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -322,7 +325,7 @@ Resources:
     Properties:
       Name: MyCodeBuildProject
       Description: My CodeBuild Project
-      ServiceRole: !GetAtt MyCodeBuildRole.Arn
+      ServiceRole: !GetAtt MySeedStack.Outputs.MyCodeBuildRoleArn
       Source:
         Type: CODEPIPELINE
       Environment:
@@ -349,50 +352,11 @@ Resources:
         Type: S3
         Location: !Sub '${S3BucketName}/codebuild-cache'
 
-  MyCodeBuildRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codebuild.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: MyCodeBuildRolePolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:GetBucketAcl
-                Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
-              - Effect: Allow
-                Action:
-                  - ecr:BatchCheckLayerAvailability
-                  - ecr:CompleteLayerUpload
-                  - ecr:GetAuthorizationToken
-                  - ecr:InitiateLayerUpload
-                  - ecr:PutImage
-                  - ecr:UploadLayerPart
-                  - ecr:BatchGetImage
-                  - ecr:GetDownloadUrlForLayer
-                Resource: '*'
-
   MyCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
       Name: MyCodePipeline
-      RoleArn: !GetAtt MyCodePipelineRole.Arn
+      RoleArn: !GetAtt MySeedStack.Outputs.MyCodePipelineRoleArn
       ArtifactStore:
         Location: !Ref MyS3Bucket
         Type: S3
@@ -441,45 +405,6 @@ Resources:
               Configuration:
                 ApplicationName: !Ref MyCodeDeployApplication
                 DeploymentGroupName: !Ref MyCodeDeployDeploymentGroup
-
-  MyCodePipelineRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codepipeline.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: MyCodePipelineRolePolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:GetBucketVersioning
-                  - s3:GetBucketAcl
-                Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
-              - Effect: Allow
-                Action:
-                  - codebuild:StartBuild
-                  - codebuild:BatchGetBuilds
-                  - codebuild:BatchGetBuildBatches
-                  - codebuild:StartBuildBatch
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - codedeploy:CreateDeployment
-                  - codedeploy:GetApplication
-                  - codedeploy:GetApplicationRevision
-                  - codedeploy:GetDeployment
-                  - codedeploy:GetDeploymentConfig
-                  - codedeploy:RegisterApplicationRevision
-                Resource: '*'
 
   MyCodeDeployApplication:
     Type: 'AWS::CodeDeploy::Application'

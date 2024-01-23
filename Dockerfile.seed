@@ -1,0 +1,5 @@
+# CUSTOM_NODE_IMAGE is replaced in AWS CodeBuild
+ARG CUSTOM_NODE_IMAGE=node:18-alpine
+FROM ${CUSTOM_NODE_IMAGE}
+
+CMD ["tail", "-f", "/dev/null"]
