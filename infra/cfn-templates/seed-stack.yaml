@@ -19,7 +19,7 @@ Resources:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
       Name: MyCodePipeline
-      RoleArn: !GetAtt MySeedStack.Outputs.MyCodePipelineRoleArn
+      RoleArn: !GetAtt MyCodePipelineRole.Arn
       ArtifactStore:
         Location: !Ref MyS3Bucket
         Type: S3
