@@ -35,6 +35,7 @@ Resources:
       TemplateURL: https://hydra-cfn-templates-stage.s3.amazonaws.com/seed-stack.yaml
       Parameters:
         ImageRepositoryName: !Ref ImageRepositoryName
+        S3Bucket: !Ref MyS3Bucket
         S3BucketName: !Ref S3BucketName
 
   MyLogGroup:
