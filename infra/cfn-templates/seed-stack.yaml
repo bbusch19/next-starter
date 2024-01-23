@@ -54,19 +54,19 @@ Resources:
                 Branch: !Ref GitHubBranch
                 OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubToken}}'
 
-          - Name: Build
-            Actions:
-              - Name: BuildAction
-                ActionTypeId:
-                  Category: Build
-                  Owner: AWS
-                  Provider: CodeBuild
-                  Version: 1
-                InputArtifacts: []
-                OutputArtifacts:
-                  - Name: BuildOutput
-                Configuration:
-                  ProjectName: !Ref MySeedCodeBuildProject
+        - Name: Build
+          Actions:
+            - Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts: []
+              OutputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ProjectName: !Ref MySeedCodeBuildProject
 
   MySeedCodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
