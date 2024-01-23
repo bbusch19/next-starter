@@ -49,7 +49,7 @@ Resources:
       Description: My CodeBuild Project
       ServiceRole: !GetAtt MyCodeBuildRole.Arn
       Source:
-        Type: NO_SOURCE
+        Type: CODEPIPELINE
         BuildSpec: !Sub |
           version: 0.2
           env:
