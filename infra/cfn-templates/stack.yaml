@@ -338,7 +338,7 @@ Resources:
           - Name: IMAGE_TAG
             Value: latest
           - Name: IMAGE_REPO_NAME
-            Value: ImageRepositoryName
+            Value: !Ref ImageRepositoryName
       Artifacts:
         Type: CODEPIPELINE
       Cache:
@@ -553,6 +553,6 @@ Outputs:
     Export:
       Name: MyECSTaskDefinitionArn
   MyContainerName:
-    Value: ContainerName
+    Value: !Ref ContainerName
     Export:
       Name: MyContainerName
