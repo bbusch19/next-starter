@@ -32,7 +32,7 @@ Resources:
   MySeedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: seed-stack.yaml
+      TemplateURL: https://hydra-cfn-templates-stage.s3.amazonaws.com/seed-stack.yaml
       Parameters:
         ImageRepositoryName: !Ref ImageRepositoryName
         S3BucketName: !Ref S3BucketName
