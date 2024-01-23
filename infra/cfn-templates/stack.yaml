@@ -340,7 +340,7 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Value: !Ref ImageRepositoryName
           - Name: TASK_ARN
-            Value: thisismyvar
+            Value: !Ref MyECSTaskDefinition
           - Name: CONTAINER_NAME
             Value: !Ref ContainerName
       Artifacts:
