@@ -549,6 +549,7 @@ Resources:
                   - sns:Publish
                   - s3:GetObject
                   - s3:GetObjectVersion
+                  - iam:PassRole
                 Resource: '*'
 
 Outputs:
