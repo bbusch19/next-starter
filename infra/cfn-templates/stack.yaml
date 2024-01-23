@@ -29,17 +29,17 @@ Resources:
     Properties:
       BucketName: !Ref S3BucketName
 
-  MySeedStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://hydra-cfn-templates-stage.s3.amazonaws.com/seed-stack.yaml
-      Parameters:
-        ImageRepositoryName: !Ref ImageRepositoryName
-        S3Bucket: !Ref MyS3Bucket
-        S3BucketName: !Ref S3BucketName
-        GitHubRepoOwner: !Ref GitHubRepoOwner
-        GitHubRepoName: !Ref GitHubRepoName
-        GitHubBranch: !Ref GitHubBranch
+  # MySeedStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: https://hydra-cfn-templates-stage.s3.amazonaws.com/seed-stack.yaml
+  #     Parameters:
+  #       ImageRepositoryName: !Ref ImageRepositoryName
+  #       S3Bucket: !Ref MyS3Bucket
+  #       S3BucketName: !Ref S3BucketName
+  #       GitHubRepoOwner: !Ref GitHubRepoOwner
+  #       GitHubRepoName: !Ref GitHubRepoName
+  #       GitHubBranch: !Ref GitHubBranch
 
   MyLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -331,7 +331,7 @@ Resources:
     Properties:
       Name: MyCodeBuildProject
       Description: My CodeBuild Project
-      ServiceRole: !GetAtt MySeedStack.Outputs.MyCodeBuildRoleArn
+      ServiceRole: !GetAtt MyCodeBuildRole.Arn
       Source:
         Type: CODEPIPELINE
       Environment:
@@ -362,7 +362,7 @@ Resources:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
       Name: MyCodePipeline
-      RoleArn: !GetAtt MySeedStack.Outputs.MyCodePipelineRoleArn
+      RoleArn: !GetAtt MyCodePipelineRole.Arn
       ArtifactStore:
         Location: !Ref MyS3Bucket
         Type: S3
@@ -448,6 +448,84 @@ Resources:
         TerminateBlueInstancesOnDeploymentSuccess:
           Action: TERMINATE
           TerminationWaitTimeInMinutes: 5
+
+  MyCodeBuildRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MyCodeBuildRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetBucketAcl
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetAuthorizationToken
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                Resource: '*'
+
+  MyCodePipelineRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MyCodePipelineRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetBucketVersioning
+                  - s3:GetBucketAcl
+                Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - codebuild:BatchGetBuildBatches
+                  - codebuild:StartBuildBatch
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - codedeploy:CreateDeployment
+                  - codedeploy:GetApplication
+                  - codedeploy:GetApplicationRevision
+                  - codedeploy:GetDeployment
+                  - codedeploy:GetDeploymentConfig
+                  - codedeploy:RegisterApplicationRevision
+                Resource: '*'
 
   MyCodeDeployRole:
     Type: 'AWS::IAM::Role'
