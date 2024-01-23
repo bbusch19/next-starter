@@ -151,7 +151,9 @@ Resources:
 
   MyALBListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    DependsOn: MyECSServiceRole
+    DependsOn:
+      - MyECSServiceRole
+      - MySeedStack
     Properties:
       DefaultActions:
         - Type: forward
