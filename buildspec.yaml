@@ -21,7 +21,7 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - printf '{"ImageURI":"%s"}' $IMAGE_REPO_NAME:$IMAGE_TAG > imageDetail.json
-      - printf 'this is my var:%s $TASK_ARN
+      - printf 'this is my var:%s' $TASK_ARN
       # - printf 'this is my other var: %s' $CONTAINER_NAME
       # - echo 'version: 0.0' > appspec.yaml
       # - echo 'Resources:' >> appspec.yaml
