@@ -474,7 +474,7 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                   - s3:GetBucketAcl
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+                Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
               - Effect: Allow
                 Action:
                   - ecr:BatchCheckLayerAvailability
@@ -508,7 +508,7 @@ Resources:
                   - s3:PutObject
                   - s3:GetBucketVersioning
                   - s3:GetBucketAcl
-                Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+                Resource: !Sub 'arn:aws:s3:::${MyS3Bucket}/*'
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
