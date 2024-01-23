@@ -12,6 +12,16 @@ Parameters:
     Type: String
     Default: my-bucket-name
     Description: Pipeline bucket name
+  GitHubRepoOwner:
+    Type: String
+    Description: GitHub repository owner
+  GitHubRepoName:
+    Type: String
+    Description: GitHub repository name
+  GitHubBranch:
+    Type: String
+    Default: main
+    Description: GitHub branch to trigger the pipeline
 
 Resources:
   MyECRRepository:
@@ -19,28 +29,45 @@ Resources:
     Properties:
       RepositoryName: !Ref ImageRepositoryName
 
-  MyCodePipeline:
+  MySeedCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
-      Name: MyCodePipeline
+      Name: MySeedCodePipeline
       RoleArn: !GetAtt MyCodePipelineRole.Arn
       ArtifactStore:
         Location: !Ref S3Bucket
         Type: S3
       Stages:
-        - Name: Build
-          Actions:
-            - Name: BuildAction
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              InputArtifacts: []
-              OutputArtifacts:
-                - Name: BuildOutput
-              Configuration:
-                ProjectName: !Ref MySeedCodeBuildProject
+        Stages:
+          - Name: Source
+            Actions:
+              - Name: SourceAction
+                ActionTypeId:
+                  Category: Source
+                  Owner: ThirdParty
+                  Provider: GitHub
+                  Version: 1
+                OutputArtifacts:
+                  - Name: SourceOutput
+                Configuration:
+                  Owner: !Ref GitHubRepoOwner
+                  Repo: !Ref GitHubRepoName
+                  Branch: !Ref GitHubBranch
+                  OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubToken}}'
+
+          - Name: Build
+            Actions:
+              - Name: BuildAction
+                ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Provider: CodeBuild
+                  Version: 1
+                InputArtifacts: []
+                OutputArtifacts:
+                  - Name: BuildOutput
+                Configuration:
+                  ProjectName: !Ref MySeedCodeBuildProject
 
   MySeedCodeBuildProject:
     Type: 'AWS::CodeBuild::Project'

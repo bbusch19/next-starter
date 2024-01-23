@@ -37,6 +37,9 @@ Resources:
         ImageRepositoryName: !Ref ImageRepositoryName
         S3Bucket: !Ref MyS3Bucket
         S3BucketName: !Ref S3BucketName
+        GitHubRepoOwner: !Ref GitHubRepoOwner
+        GitHubRepoName: !Ref GitHubRepoName
+        GitHubBranch: !Ref GitHubBranch
 
   MyLogGroup:
     Type: 'AWS::Logs::LogGroup'
