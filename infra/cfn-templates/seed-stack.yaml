@@ -160,10 +160,10 @@ Resources:
 
 Outputs:
   MyCodeBuildRoleArn:
-    Value: !GetArr MyCodeBuildRole.Arn
+    Value: !GetAtt MyCodeBuildRole.Arn
     Export:
       Name: MyCodeBuildRoleArn
   MyCodePipelineRoleArn:
-    Value: !GetAtt MyCodePipelineRole.Arm
+    Value: !GetAtt MyCodePipelineRole.Arn
     Export:
       Name: MyCodePipelineRoleArn
