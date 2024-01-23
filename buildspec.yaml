@@ -21,6 +21,7 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - printf '{"ImageURI":"%s"}' $IMAGE_REPO_NAME:$IMAGE_TAG > imageDetail.json
+      - printf 'version: 0.0\nResources:\n\t- TargetService:\n\t\tType: AWS::ECS::Service\n\t\tProperties:\n\t\t\tTaskDefinition: $($TASK_ARN)\n\t\t\tLoadBalancerInfo:\n\t\t\t\tContainerName: $($CONTAINER_NAME)\n\t\t\t\tContainerPort: 3000' > appspec.yaml
 artifacts:
   files:
     - imageDetail.json
