@@ -1,9 +1,10 @@
+# A new appspec.yaml will be generated in the buildspec.yaml file. This file is for reference only.
 version: 0.0
 Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: !ImportValue MyECSTaskDefinitionArn
+        TaskDefinition: task-definition-arn-from-stack
         LoadBalancerInfo:
-          ContainerName: !ImportValue MyContainerName
+          ContainerName: container-name-from-stack
           ContainerPort: 3000
