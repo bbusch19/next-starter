@@ -459,8 +459,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: !GetAtt MyTargetGroup.Name
-              - Name: !GetAtt MySecondTargetGroup.Name
+              - !Ref MyTargetGroup
+              - !Ref MySecondTargetGroup
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref MyALBListener
