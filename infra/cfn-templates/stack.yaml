@@ -80,7 +80,7 @@ Resources:
   MySeedCodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
     Properties:
-      Name: Name: !Sub '${UniqueID}-MySeedCodeBuildProject'
+      Name: !Sub '${UniqueID}-MySeedCodeBuildProject'
       Description: My CodeBuild Project
       ServiceRole: !GetAtt MyCodeBuildRole.Arn
       Source:
@@ -363,9 +363,9 @@ Resources:
 
   MyECSService:
     Type: 'AWS::ECS::Service'
-    DependsOn: 
-    - MyALBListener
-    - MySeedCodeBuildProject
+    DependsOn:
+      - MyALBListener
+      - MySeedCodeBuildProject
     Properties:
       ServiceName: !Sub '${UniqueID}-MyECSService'
       Cluster: !Ref MyECSCluster
