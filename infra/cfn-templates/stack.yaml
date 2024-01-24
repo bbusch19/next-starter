@@ -11,16 +11,20 @@ Parameters:
     Type: String
     Default: main
     Description: GitHub branch to trigger the pipeline
+  UniqueID:
+    Type: String
+    Default: commit-hash
+    Description: ID for unique resource naming
   ImageRepositoryName:
     Type: String
     Default: my-ecr-repo
     Description: Name of the Amazon ECR repository
   S3BucketName:
     Type: String
-    Default: my-bucket
+    Default: !Sub '${UniqueID}-bucket'
   ContainerName:
     Type: String
-    Default: my-container
+    Default: !Sub '${UniqueID}-container'
 
 Resources:
   MyS3Bucket:
@@ -44,7 +48,7 @@ Resources:
   MyLogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
-      LogGroupName: /ecs/MyLogGroup
+      LogGroupName: !Sub '/ecs/${UniqueID}/MyLogGroup'
 
   MyVPC:
     Type: 'AWS::EC2::VPC'
@@ -54,10 +58,14 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: MyVPC
+          Value: !Sub '${UniqueID}-vpc'
 
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${UniqueID}-gateway'
 
   MyInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -74,7 +82,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: PublicSubnetA
+          Value: !Sub '${UniqueID}-PublicSubnetA'
 
   PublicSubnetB:
     Type: 'AWS::EC2::Subnet'
@@ -85,7 +93,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: PublicSubnetB
+          Value: !Sub '${UniqueID}-PublicSubnetB'
 
   PrivateSubnetA:
     Type: 'AWS::EC2::Subnet'
@@ -95,7 +103,7 @@ Resources:
       VpcId: !Ref MyVPC
       Tags:
         - Key: Name
-          Value: PrivateSubnetA
+          Value: !Sub '${UniqueID}-PrivateSubnetA'
 
   PrivateSubnetB:
     Type: 'AWS::EC2::Subnet'
@@ -105,12 +113,15 @@ Resources:
       VpcId: !Ref MyVPC
       Tags:
         - Key: Name
-          Value: PrivateSubnetB
+          Value: !Sub '${UniqueID}-PrivateSubnetB'
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub '${UniqueID}-PublicRouteTable'
 
   PublicRouteTableAssociationA:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -138,7 +149,7 @@ Resources:
       - MyInternetGateway
       - MyInternetGatewayAttachment
     Properties:
-      Name: MyALB
+      Name: !Sub '${UniqueID}-MyALB'
       Subnets:
         - !Ref PublicSubnetA
         - !Ref PublicSubnetB
@@ -147,7 +158,7 @@ Resources:
       Scheme: internet-facing
       Tags:
         - Key: Name
-          Value: MyALB
+          Value: !Sub '${UniqueID}-MyALB'
 
   MyALBListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
@@ -167,7 +178,7 @@ Resources:
   MyTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: MyTargetGroup1
+      Name: !Sub '${UniqueID}-MyTargetGroup1'
       Port: 80
       Protocol: HTTP
       VpcId: !Ref MyVPC
@@ -179,11 +190,14 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
+      Tags:
+        - Key: Name
+          Value: !Sub '${UniqueID}-MyTargetGroup1'
 
   MySecondTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: MyTargetGroup2
+      Name: !Sub '${UniqueID}-MyTargetGroup2'
       Port: 80
       Protocol: HTTP
       VpcId: !Ref MyVPC
@@ -195,25 +209,32 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
+      Tags:
+        - Key: Name
+          Value: !Sub '${UniqueID}-MyTargetGroup2'
 
   MyALBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
+      GroupName: !Sub '${UniqueID}-MyALBSecurityGroup'
       GroupDescription: 'Allow traffic to ALB'
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - CidrIp: '0.0.0.0/0'
           IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: !Sub '${UniqueID}-MyALBSecurityGroup'
 
   MyECSCluster:
     Type: 'AWS::ECS::Cluster'
     Properties:
-      ClusterName: MyECSCluster
+      ClusterName: !Sub '${UniqueID}-MyECSCluster'
 
   MyECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
-      Family: MyECSTask
+      Family: !Sub '${UniqueID}-MyECSTask'
       NetworkMode: awsvpc
       Memory: 2048 # Specify the amount of memory in MiB
       Cpu: 1024
@@ -234,13 +255,14 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: /ecs/MyLogGroup
+              awslogs-group: !Sub '/ecs/${UniqueID}/MyLogGroup'
               awslogs-region: us-east-1
               awslogs-stream-prefix: !Ref ContainerName
 
   MyECSTaskExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub '${UniqueID}-MyECSTaskExecutionRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -249,7 +271,7 @@ Resources:
               Service: ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: ECSExecutionRolePolicy
+        - PolicyName: !Sub '${UniqueID}-ECSExecutionRolePolicy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -267,6 +289,7 @@ Resources:
     Type: 'AWS::ECS::Service'
     DependsOn: MyALBListener
     Properties:
+      ServiceName: !Sub '${UniqueID}-MyECSService'
       Cluster: !Ref MyECSCluster
       DesiredCount: 1 # Adjust as needed
       TaskDefinition: !Ref MyECSTaskDefinition
@@ -289,6 +312,7 @@ Resources:
   MyECSServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub '${UniqueID}-MyECSServiceRole'
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -299,7 +323,7 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       Policies:
-        - PolicyName: ecs-service
+        - PolicyName: !Sub '${UniqueID}-ecs-service'
           PolicyDocument:
             Statement:
               - Effect: Allow
@@ -316,6 +340,7 @@ Resources:
   MyECSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
+      GroupName: !Sub '${UniqueID}-MyECSSecurityGroup'
       GroupDescription: 'Allow traffic to ECS tasks'
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
@@ -328,7 +353,7 @@ Resources:
   MyCodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
     Properties:
-      Name: MyCodeBuildProject
+      Name: !Sub '${UniqueID}-MyCodeBuildProject'
       Description: My CodeBuild Project
       ServiceRole: !GetAtt MyCodeBuildRole.Arn
       Source:
@@ -360,7 +385,7 @@ Resources:
   MyCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
-      Name: MyCodePipeline
+      Name: !Sub '${UniqueID}-MyCodePipeline'
       RoleArn: !GetAtt MyCodePipelineRole.Arn
       ArtifactStore:
         Location: !Ref MyS3Bucket
@@ -414,14 +439,14 @@ Resources:
   MyCodeDeployApplication:
     Type: 'AWS::CodeDeploy::Application'
     Properties:
-      ApplicationName: MyCodeDeployApplication
+      ApplicationName: !Sub '${UniqueID}-MyCodeDeployApplication'
       ComputePlatform: ECS
 
   MyCodeDeployDeploymentGroup:
     Type: 'AWS::CodeDeploy::DeploymentGroup'
     Properties:
       ApplicationName: !Ref MyCodeDeployApplication
-      DeploymentGroupName: MyCodeDeployDeploymentGroup
+      DeploymentGroupName: !Sub '${UniqueID}-MyCodeDeployDeploymentGroup'
       ServiceRoleArn: !GetAtt MyCodeDeployRole.Arn
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       DeploymentStyle:
@@ -434,8 +459,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: MyTargetGroup1
-              - Name: MyTargetGroup2
+              - Name: !GetAtt MyTargetGroup1.Name
+              - Name: !GetAtt MyTargetGroup2.Name
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref MyALBListener
@@ -451,6 +476,7 @@ Resources:
   MyCodeBuildRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub '${UniqueID}-MyCodeBuildRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -459,7 +485,7 @@ Resources:
               Service: codebuild.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: MyCodeBuildRolePolicy
+        - PolicyName: !Sub '${UniqueID}-MyCodeBuildRolePolicy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -490,6 +516,7 @@ Resources:
   MyCodePipelineRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub '${UniqueID}-MyCodePipelineRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -498,7 +525,7 @@ Resources:
               Service: codepipeline.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: MyCodePipelineRolePolicy
+        - PolicyName: !Sub '${UniqueID}-MyCodePipelineRolePolicy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -529,6 +556,7 @@ Resources:
   MyCodeDeployRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub '${UniqueID}-MyCodeDeployRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -537,7 +565,7 @@ Resources:
               Service: codedeploy.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: MyCodeDeployRolePolicy
+        - PolicyName: !Sub '${UniqueID}-MyCodeDeployRolePolicy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
