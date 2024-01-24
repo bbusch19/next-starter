@@ -19,19 +19,19 @@ Parameters:
     Type: String
     Default: my-ecr-repo
     Description: Name of the Amazon ECR repository
-  S3BucketName:
-    Type: String
-    Default: !Sub '${UniqueID}-bucket'
-  ContainerName:
-    Type: String
-    Default: !Sub '${UniqueID}-container'
+  # S3BucketName:
+  #   Type: String
+  #   Default: !Sub '${UniqueID}-bucket'
+  # ContainerName:
+  #   Type: String
+  #   Default: !Sub '${UniqueID}-container'
 
 Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
     Properties:
-      BucketName: !Ref S3BucketName
+      BucketName: !Sub '${UniqueID}-bucket'
 
   # MySeedStack:
   #   Type: AWS::CloudFormation::Stack
@@ -245,7 +245,7 @@ Resources:
         CpuArchitecture: ARM64
         OperatingSystemFamily: LINUX
       ContainerDefinitions:
-        - Name: !Ref ContainerName
+        - Name: !Sub '${UniqueID}-container'
           Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageRepositoryName}:latest'
           Memory: 2048 # Specify the amount of memory in MiB
           Cpu: 1024
@@ -257,7 +257,7 @@ Resources:
             Options:
               awslogs-group: !Sub '/ecs/${UniqueID}/MyLogGroup'
               awslogs-region: us-east-1
-              awslogs-stream-prefix: !Ref ContainerName
+              awslogs-stream-prefix: !Sub '${UniqueID}-container'
 
   MyECSTaskExecutionRole:
     Type: 'AWS::IAM::Role'
@@ -297,7 +297,7 @@ Resources:
       DeploymentController:
         Type: CODE_DEPLOY
       LoadBalancers:
-        - ContainerName: !Ref ContainerName
+        - ContainerName: !Sub '${UniqueID}-container'
           ContainerPort: 3000
           TargetGroupArn: !Ref MyTargetGroup
       NetworkConfiguration:
@@ -375,12 +375,12 @@ Resources:
           - Name: TASK_ARN
             Value: !Ref MyECSTaskDefinition
           - Name: CONTAINER_NAME
-            Value: !Ref ContainerName
+            Value: !Sub '${UniqueID}-container'
       Artifacts:
         Type: CODEPIPELINE
       Cache:
         Type: S3
-        Location: !Sub '${S3BucketName}/codebuild-cache'
+        Location: !Sub '${UniqueID}-bucket/codebuild-cache'
 
   MyCodePipeline:
     Type: 'AWS::CodePipeline::Pipeline'
@@ -594,6 +594,6 @@ Outputs:
     Export:
       Name: MyECSTaskDefinitionArn
   MyContainerName:
-    Value: !Ref ContainerName
+    Value: !Sub '${UniqueID}-container'
     Export:
       Name: MyContainerName
