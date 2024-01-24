@@ -587,13 +587,12 @@ Resources:
                   - s3:GetObjectVersion
                   - iam:PassRole
                 Resource: '*'
-
-Outputs:
-  MyECSTaskDefinitionArn:
-    Value: !Ref MyECSTaskDefinition
-    Export:
-      Name: MyECSTaskDefinitionArn
-  MyContainerName:
-    Value: !Sub '${UniqueID}-container'
-    Export:
-      Name: MyContainerName
+# Outputs:
+#   MyECSTaskDefinitionArn:
+#     Value: !Ref MyECSTaskDefinition
+#     Export:
+#       Name: MyECSTaskDefinitionArn
+#   MyContainerName:
+#     Value: !Sub '${UniqueID}-container'
+#     Export:
+#       Name: MyContainerName
