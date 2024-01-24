@@ -19,12 +19,6 @@ Parameters:
     Type: String
     Default: my-ecr-repo
     Description: Name of the Amazon ECR repository
-  # S3BucketName:
-  #   Type: String
-  #   Default: !Sub '${UniqueID}-bucket'
-  # ContainerName:
-  #   Type: String
-  #   Default: !Sub '${UniqueID}-container'
 
 Resources:
   MyS3Bucket:
@@ -33,17 +27,98 @@ Resources:
     Properties:
       BucketName: !Sub '${UniqueID}-bucket'
 
-  # MySeedStack:
-  #   Type: AWS::CloudFormation::Stack
-  #   Properties:
-  #     TemplateURL: https://hydra-cfn-templates-stage.s3.amazonaws.com/seed-stack.yaml
-  #     Parameters:
-  #       ImageRepositoryName: !Ref ImageRepositoryName
-  #       S3Bucket: !Ref MyS3Bucket
-  #       S3BucketName: !Ref S3BucketName
-  #       GitHubRepoOwner: !Ref GitHubRepoOwner
-  #       GitHubRepoName: !Ref GitHubRepoName
-  #       GitHubBranch: !Ref GitHubBranch
+  MyECRRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Ref ImageRepositoryName
+
+  ######################################
+  # SEED PIPLINE FOR BUILDING A SEED IMAGE AND PUSHING TO ECR
+  # THIS ONLY RUNS ONCE ON CREATE
+  ######################################
+  MySeedCodePipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: !Sub '${UniqueID}-MySeedCodePipeline'
+      RoleArn: !GetAtt MyCodePipelineRole.Arn
+      ArtifactStore:
+        Location: !Ref MyS3Bucket
+        Type: S3
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: !Ref GitHubRepoOwner
+                Repo: !Ref GitHubRepoName
+                Branch: !Ref GitHubBranch
+                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubToken}}'
+
+        - Name: Build
+          Actions:
+            - Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ProjectName: !Ref MySeedCodeBuildProject
+
+  MySeedCodeBuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: Name: !Sub '${UniqueID}-MySeedCodeBuildProject'
+      Description: My CodeBuild Project
+      ServiceRole: !GetAtt MyCodeBuildRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Sub |
+          version: 0.2
+          env:
+            variables:
+              AWS_DEFAULT_REGION: "us-east-1"
+              AWS_ACCOUNT_ID: 292770788088
+              IMAGE_TAG: latest
+              IMAGE_REPO_NAME: ${ImageRepositoryName}
+          phases:
+            install:
+              commands:
+                - echo Logging in to Amazon ECR...
+                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+            build:
+              commands:
+                - echo Build started on `date`
+                - echo Building the Docker image...
+                - docker build -f Dockerfile.seed --build-arg="CUSTOM_NODE_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/node:18-alpine" -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+                - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+            post_build:
+              commands:
+                - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      Environment:
+        Type: ARM_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0
+        PrivilegedMode: true
+      Artifacts:
+        Type: CODEPIPELINE
+      Cache:
+        Type: S3
+        Location: !Sub '${UniqueID}-bucket/codebuild-cache'
+  ######################################
+  # END SEED PIPELINE
+  ######################################
 
   MyLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -287,7 +362,9 @@ Resources:
 
   MyECSService:
     Type: 'AWS::ECS::Service'
-    DependsOn: MyALBListener
+    DependsOn: 
+    - MyALBListener
+    - MySeedCodeBuildProject
     Properties:
       ServiceName: !Sub '${UniqueID}-MyECSService'
       Cluster: !Ref MyECSCluster
