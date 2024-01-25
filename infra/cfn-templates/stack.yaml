@@ -81,8 +81,8 @@ Resources:
                 Owner: !Ref GitHubRepoOwner
                 Repo: !Ref GitHubRepoName
                 Branch: !Ref GitHubBranch
-                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubOAuthToken}'
-                PollSourceForChanges: false
+                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubOAuthToken}}'
+                PollForSourceChanges: false
 
         - Name: Build
           Actions:
@@ -465,7 +465,7 @@ Resources:
                 Owner: !Ref GitHubRepoOwner
                 Repo: !Ref GitHubRepoName
                 Branch: !Ref GitHubBranch
-                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubOAuthToken}'
+                OAuthToken: '{{resolve:secretsmanager:/test/github:SecretString:GitHubOAuthToken}}'
 
         - Name: Build
           Actions:
