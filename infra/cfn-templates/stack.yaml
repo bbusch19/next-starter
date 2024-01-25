@@ -365,7 +365,7 @@ Resources:
     Type: 'AWS::ECS::Service'
     DependsOn:
       - MyALBListener
-      - MySeedCodeBuildProject
+      - MySeedCodePipeline
     Properties:
       ServiceName: !Sub '${UniqueID}-MyECSService'
       Cluster: !Ref MyECSCluster
