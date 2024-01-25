@@ -2,4 +2,7 @@
 ARG CUSTOM_NODE_IMAGE=node:18-alpine
 FROM ${CUSTOM_NODE_IMAGE}
 
+EXPOSE 3000
+ENV PORT 3000
+
 CMD ["tail", "-f", "/dev/null"]
