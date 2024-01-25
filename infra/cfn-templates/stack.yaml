@@ -75,48 +75,48 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ProjectName: !Ref MySeedCodeBuildProject
+                ProjectName: !Ref MyCodeBuildProject
 
-  MySeedCodeBuildProject:
-    Type: 'AWS::CodeBuild::Project'
-    Properties:
-      Name: !Sub '${UniqueID}-MySeedCodeBuildProject'
-      Description: My CodeBuild Project
-      ServiceRole: !GetAtt MyCodeBuildRole.Arn
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Sub |
-          version: 0.2
-          env:
-            variables:
-              AWS_DEFAULT_REGION: "us-east-1"
-              AWS_ACCOUNT_ID: 292770788088
-              IMAGE_TAG: latest
-              IMAGE_REPO_NAME: ${ImageRepositoryName}
-          phases:
-            install:
-              commands:
-                - echo Logging in to Amazon ECR...
-                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-            build:
-              commands:
-                - echo Build started on `date`
-                - echo Building the Docker image...
-                - docker build -f Dockerfile.seed --build-arg="CUSTOM_NODE_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/node:18-alpine" -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-                - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-            post_build:
-              commands:
-                - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      Environment:
-        Type: ARM_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0
-        PrivilegedMode: true
-      Artifacts:
-        Type: CODEPIPELINE
-      Cache:
-        Type: S3
-        Location: !Sub '${UniqueID}-bucket/codebuild-cache'
+  # MySeedCodeBuildProject:
+  #   Type: 'AWS::CodeBuild::Project'
+  #   Properties:
+  #     Name: !Sub '${UniqueID}-MySeedCodeBuildProject'
+  #     Description: My CodeBuild Project
+  #     ServiceRole: !GetAtt MyCodeBuildRole.Arn
+  #     Source:
+  #       Type: CODEPIPELINE
+  #       BuildSpec: !Sub |
+  #         version: 0.2
+  #         env:
+  #           variables:
+  #             AWS_DEFAULT_REGION: "us-east-1"
+  #             AWS_ACCOUNT_ID: 292770788088
+  #             IMAGE_TAG: latest
+  #             IMAGE_REPO_NAME: ${ImageRepositoryName}
+  #         phases:
+  #           install:
+  #             commands:
+  #               - echo Logging in to Amazon ECR...
+  #               - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  #           build:
+  #             commands:
+  #               - echo Build started on `date`
+  #               - echo Building the Docker image...
+  #               - docker build -f Dockerfile.seed --build-arg="CUSTOM_NODE_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/node:18-alpine" -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+  #               - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  #           post_build:
+  #             commands:
+  #               - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  #     Environment:
+  #       Type: ARM_CONTAINER
+  #       ComputeType: BUILD_GENERAL1_SMALL
+  #       Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0
+  #       PrivilegedMode: true
+  #     Artifacts:
+  #       Type: CODEPIPELINE
+  #     Cache:
+  #       Type: S3
+  #       Location: !Sub '${UniqueID}-bucket/codebuild-cache'
   ######################################
   # END SEED PIPELINE
   ######################################
