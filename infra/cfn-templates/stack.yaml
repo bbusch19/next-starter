@@ -537,8 +537,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: !Ref MyTargetGroup
-              - Name: !Ref MySecondTargetGroup
+              - Name: !Sub '${UniqueID}-MyTargetGroup1'
+              - Name: !Sub '${UniqueID}-MyTargetGroup2'
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref MyALBListener
