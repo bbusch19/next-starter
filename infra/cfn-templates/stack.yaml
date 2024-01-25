@@ -84,10 +84,6 @@ Resources:
                 OAuthToken: !Join
                   - ''
                   - - '{{resolve:secretsmanager:'
-                    - !Ref 'ProjectName'
-                    - /
-                    - !Ref 'Environment'
-                    - /
                     - !Ref SecureTokensSecretsManagerPathSuffix
                     - :SecretString:GitHubOAuthToken}
                 PollSourceForChanges: false
